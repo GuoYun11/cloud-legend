@@ -1,0 +1,88 @@
+:root {
+  /* Color Palette - 传奇复古风格 */
+  --color-bg-dark: #1a0f0a;
+  --color-bg-main: #2a1f15;
+  --color-bg-panel: #3d2e1e;
+  --color-bg-hover: #4a3828;
+  --color-bg-active: #5a4432;
+  --color-bg-overlay: rgba(0, 0, 0, 0.75);
+
+  --color-border: #6b5238;
+  --color-border-light: #8a6d4a;
+  --color-border-gold: #c8a44e;
+
+  --color-text-primary: #e8d5b5;
+  --color-text-secondary: #b09878;
+  --color-text-muted: #7a6548;
+  --color-text-gold: #ffd700;
+  --color-text-white: #ffffff;
+
+  /* Quality Colors */
+  --color-quality-normal: #9ca3af;
+  --color-quality-uncommon: #22c55e;
+  --color-quality-rare: #3b82f6;
+  --color-quality-epic: #a855f7;
+  --color-quality-legendary: #f59e0b;
+  --color-quality-mythic: #ef4444;
+
+  /* Status Colors */
+  --color-hp: #dc2626;
+  --color-hp-bg: #4a1515;
+  --color-mp: #2563eb;
+  --color-mp-bg: #152040;
+  --color-exp: #16a34a;
+  --color-exp-bg: #0a3015;
+  --color-gold: #fbbf24;
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  --color-crit: #ff6b35;
+  --color-heal: #4ade80;
+  --color-miss: #94a3b8;
+
+  /* Typography */
+  --font-family: 'Microsoft YaHei', 'SimHei', 'PingFang SC', sans-serif;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-xxl: 22px;
+  --font-size-title: 28px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 24px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 0 12px rgba(255, 215, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(255, 215, 0, 0.4);
+
+  /* Z-index */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+  --z-loading: 400;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+}

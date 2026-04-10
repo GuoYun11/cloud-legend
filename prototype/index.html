@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>云传奇 - 经典复古风格原型</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 主界面 -->
+        <div class="screen active" id="screen-main">
+            <!-- 角色信息区 -->
+            <div class="player-info">
+                <div class="player-header">
+                    <span class="player-class warrior">战士</span>
+                    <span class="player-name">烈火狂刀</span>
+                    <span class="player-level">Lv.128</span>
+                </div>
+                <div class="player-stats">
+                    <div class="stat-row">
+                        <span class="stat-icon">❤️</span>
+                        <div class="progress-bar health">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <span class="stat-value">15800/15800</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-icon">💧</span>
+                        <div class="progress-bar mana">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                        <span class="stat-value">3200/3800</span>
+                    </div>
+                    <div class="stat-row exp-row">
+                        <span class="stat-label">经验</span>
+                        <div class="progress-bar exp">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                        <span class="stat-value">65%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 战斗区域 -->
+            <div class="battle-area">
+                <!-- 当前地图 -->
+                <div class="map-info">
+                    <div class="map-name">🗺️ 赤月峡谷·恶魔祭坛</div>
+                    <div class="map-desc">瘴气弥漫，双头金刚的咆哮响彻山谷</div>
+                </div>
+
+                <!-- 怪物区域 -->
+                <div class="monster-area">
+                    <div class="monster-icon">👹</div>
+                    <div class="monster-name">双头血魔</div>
+                    <div class="monster-health-bar">
+                        <div class="progress-bar boss-health">
+                            <div class="progress-fill" style="width: 72%"></div>
+                        </div>
+                        <span class="health-percent">72%</span>
+                    </div>
+                </div>
+
+                <!-- 战斗日志 -->
+                <div class="battle-log">
+                    <div class="log-entry skill">⚔️ 烈火剑法！一刀破万血！</div>
+                    <div class="log-entry">⚔️ 你攻击了双头血魔，造成2847点伤害</div>
+                    <div class="log-entry gold">💰 获得金币 +1,256</div>
+                    <div class="log-entry legendary">✦ 圣战手镯 [传说] 掉落！</div>
+                    <div class="log-entry">⚔️ 双头血魔攻击了你，造成156点伤害</div>
+                    <div class="log-entry">☯️ 无极真气爆发！道法暴涨！</div>
+                </div>
+            </div>
+
+            <!-- 底部功能区 -->
+            <div class="bottom-actions">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-screen="main">挂机</button>
+                    <button class="nav-tab" data-screen="map">地图</button>
+                    <button class="nav-tab" data-screen="equipment">装备</button>
+                    <button class="nav-tab" data-screen="bag">背包</button>
+                    <button class="nav-tab" data-screen="zodiac">生肖</button>
+                </div>
+                <button class="btn-offline-reward">
+                    <span class="reward-label">💰 领取离线收益</span>
+                    <span class="reward-value">12小时 = 25,600金币</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 地图界面 -->
+        <div class="screen" id="screen-map">
+            <div class="screen-header">
+                <button class="btn-back" data-screen="main">&lt; 返回</button>
+                <h1 class="screen-title">🗺️ 玛法大陆</h1>
+            </div>
+            <div class="screen-content">
+                <div class="map-list">
+                    <div class="map-card unlocked">
+                        <div class="map-card-header">
+                            <span class="map-icon">🏘️</span>
+                            <span class="map-card-name">新手村</span>
+                            <span class="map-status">✅</span>
+                        </div>
+                        <div class="map-card-info">
+                            <div class="map-level">推荐等级: 1-30</div>
+                            <div class="map-drops">主要掉落: 基础装备</div>
+                        </div>
+                    </div>
+
+                    <div class="map-card unlocked">
+                        <div class="map-card-header">
+                            <span class="map-icon">⛩️</span>
+                            <span class="map-card-name">祖玛寺庙</span>
+                            <span class="map-status">✅</span>
+                        </div>
+                        <div class="map-card-info">
+                            <div class="map-level">推荐等级: 31-80</div>
+                            <div class="map-boss">BOSS: 祖玛教主 ⏱️ 12:30</div>
+                            <div class="map-drops">主要掉落: 沃玛/祖玛套装</div>
+                        </div>
+                    </div>
+
+                    <div class="map-card unlocked current">
+                        <div class="map-card-header">
+                            <span class="map-icon">🌙</span>
+                            <span class="map-card-name">赤月峡谷</span>
+                            <span class="map-status current">当前</span>
+                        </div>
+                        <div class="map-card-info">
+                            <div class="map-level">推荐等级: 81-120</div>
+                            <div class="map-boss">BOSS: 双头血魔/金刚 ⏱️ 08:45</div>
+                            <div class="map-drops">主要掉落: 圣战/法神/天尊套装</div>
+                        </div>
+                    </div>
+
+                    <div class="map-card locked">
+                        <div class="map-card-header">
+                            <span class="map-icon">🐉</span>
+                            <span class="map-card-name">魔龙岭</span>
+                            <span class="map-status">🔒</span>
+                        </div>
+                        <div class="map-card-info">
+                            <div class="map-level">推荐等级: 121-150</div>
+                            <div class="map-lock">解锁条件: 等级达到121级</div>
+                        </div>
+                    </div>
+
+                    <div class="map-card locked">
+                        <div class="map-card-header">
+                            <span class="map-icon">🏔️</span>
+                            <span class="map-card-name">狐月秘境</span>
+                            <span class="map-status">🔒</span>
+                        </div>
+                        <div class="map-card-info">
+                            <div class="map-level">推荐等级: 151+</div>
+                            <div class="map-lock">解锁条件: 等级达到151级</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 装备界面 -->
+        <div class="screen" id="screen-equipment">
+            <div class="screen-header">
+                <button class="btn-back" data-screen="main">&lt; 返回</button>
+                <h1 class="screen-title">🎒 装备</h1>
+            </div>
+            <div class="screen-content">
+                <!-- 装备穿戴区 -->
+                <div class="equipment-section">
+                    <div class="section-title">当前穿戴</div>
+                    <div class="equipment-grid">
+                        <div class="equipment-slot empty">
+                            <div class="slot-label">头盔</div>
+                        </div>
+                        <div class="equipment-slot occupied quality-legendary">
+                            <div class="slot-icon">📿</div>
+                            <div class="slot-name">圣战</div>
+                        </div>
+                        <div class="equipment-slot empty">
+                            <div class="slot-label">项链</div>
+                        </div>
+                        
+                        <div class="equipment-slot occupied quality-legendary">
+                            <div class="slot-icon">⚔️</div>
+                            <div class="slot-name">裁决</div>
+                        </div>
+                        <div class="equipment-slot occupied quality-legendary">
+                            <div class="slot-icon">👕</div>
+                            <div class="slot-name">天魔</div>
+                        </div>
+                        <div class="equipment-slot empty">
+                            <div class="slot-label">盾牌</div>
+                        </div>
+                        
+                        <div class="equipment-slot occupied quality-legendary">
+                            <div class="slot-icon">💍</div>
+                            <div class="slot-name">圣战</div>
+                        </div>
+                        <div class="equipment-slot occupied quality-legendary">
+                            <div class="slot-icon">💍</div>
+                            <div class="slot-name">圣战</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 四格配饰 -->
+                <div class="equipment-section">
+                    <div class="section-title">四格配饰</div>
+                    <div class="accessory-grid">
+                        <div class="accessory-slot occupied">
+                            <div class="slot-icon">🎩</div>
+                            <div class="slot-name">斗笠</div>
+                        </div>
+                        <div class="accessory-slot occupied">
+                            <div class="slot-icon">🎖️</div>
+                            <div class="slot-name">勋章</div>
+                        </div>
+                        <div class="accessory-slot occupied">
+                            <div class="slot-icon">🥁</div>
+                            <div class="slot-name">军鼓</div>
+                        </div>
+                        <div class="accessory-slot occupied">
+                            <div class="slot-icon">📜</div>
+                            <div class="slot-name">符咒</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="equipment-actions">
+                    <button class="btn-equip">一键穿戴</button>
+                    <button class="btn-equip">一键合成</button>
+                    <button class="btn-equip">一键强化</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 背包界面 -->
+        <div class="screen" id="screen-bag">
+            <div class="screen-header">
+                <button class="btn-back" data-screen="main">&lt; 返回</button>
+                <h1 class="screen-title">🎒 背包 (48/100)</h1>
+            </div>
+            <div class="screen-content">
+                <div class="bag-grid">
+                    <div class="bag-item quality-legendary">
+                        <div class="item-icon">📿</div>
+                        <div class="item-name">圣战头盔</div>
+                    </div>
+                    <div class="bag-item quality-rare">
+                        <div class="item-icon">💍</div>
+                        <div class="item-name">沃玛戒指</div>
+                    </div>
+                    <div class="bag-item quality-magic">
+                        <div class="item-icon">📿</div>
+                        <div class="item-name">祖玛项链</div>
+                    </div>
+                    <div class="bag-item gold">
+                        <div class="item-icon">💰</div>
+                        <div class="item-name">金币×500</div>
+                    </div>
+                    <div class="bag-item quality-normal">
+                        <div class="item-icon">🧪</div>
+                        <div class="item-name">金疮药</div>
+                    </div>
+                    <div class="bag-item quality-normal">
+                        <div class="item-icon">🧪</div>
+                        <div class="item-name">魔法药</div>
+                    </div>
+                    <div class="bag-item material">
+                        <div class="item-icon">🔩</div>
+                        <div class="item-name">强化石</div>
+                    </div>
+                    <div class="bag-item material">
+                        <div class="item-icon">📦</div>
+                        <div class="item-name">碎片</div>
+                    </div>
+                    <div class="bag-item empty"></div>
+                    <div class="bag-item empty"></div>
+                    <div class="bag-item empty"></div>
+                    <div class="bag-item empty"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生肖界面 -->
+        <div class="screen" id="screen-zodiac">
+            <div class="screen-header">
+                <button class="btn-back" data-screen="main">&lt; 返回</button>
+                <h1 class="screen-title">🐲 十二生肖</h1>
+            </div>
+            <div class="screen-content">
+                <!-- 收集进度 -->
+                <div class="zodiac-progress">
+                    <div class="progress-header">
+                        <span>收集进度: 8/12 (66%)</span>
+                    </div>
+                    <div class="progress-bar zodiac-bar">
+                        <div class="progress-fill" style="width: 66%"></div>
+                    </div>
+                </div>
+
+                <!-- 生肖格子 -->
+                <div class="zodiac-grid">
+                    <div class="zodiac-item obtained quality-legendary">
+                        <div class="zodiac-icon">🐭</div>
+                        <div class="zodiac-name">子鼠</div>
+                        <div class="zodiac-quality">传说</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-epic">
+                        <div class="zodiac-icon">🐮</div>
+                        <div class="zodiac-name">丑牛</div>
+                        <div class="zodiac-quality">史诗</div>
+                    </div>
+                    <div class="zodiac-item empty">
+                        <div class="zodiac-icon">🐯</div>
+                        <div class="zodiac-name">寅虎</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-rare">
+                        <div class="zodiac-icon">🐰</div>
+                        <div class="zodiac-name">卯兔</div>
+                        <div class="zodiac-quality">稀有</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-legendary">
+                        <div class="zodiac-icon">🐲</div>
+                        <div class="zodiac-name">辰龙</div>
+                        <div class="zodiac-quality">传说</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-legendary">
+                        <div class="zodiac-icon">🐍</div>
+                        <div class="zodiac-name">巳蛇</div>
+                        <div class="zodiac-quality">传说</div>
+                    </div>
+                    <div class="zodiac-item empty">
+                        <div class="zodiac-icon">🐴</div>
+                        <div class="zodiac-name">午马</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-epic">
+                        <div class="zodiac-icon">🐑</div>
+                        <div class="zodiac-name">未羊</div>
+                        <div class="zodiac-quality">史诗</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-rare">
+                        <div class="zodiac-icon">🐵</div>
+                        <div class="zodiac-name">申猴</div>
+                        <div class="zodiac-quality">稀有</div>
+                    </div>
+                    <div class="zodiac-item empty">
+                        <div class="zodiac-icon">🐔</div>
+                        <div class="zodiac-name">酉鸡</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-epic">
+                        <div class="zodiac-icon">🐶</div>
+                        <div class="zodiac-name">戌狗</div>
+                        <div class="zodiac-quality">史诗</div>
+                    </div>
+                    <div class="zodiac-item obtained quality-legendary">
+                        <div class="zodiac-icon">🐷</div>
+                        <div class="zodiac-name">亥猪</div>
+                        <div class="zodiac-quality">传说</div>
+                    </div>
+                </div>
+
+                <!-- 套装效果 -->
+                <div class="set-bonus">
+                    <div class="section-title">套装效果</div>
+                    <div class="bonus-item active">
+                        <div class="bonus-header">
+                            <span class="bonus-name">6件效果</span>
+                            <span class="bonus-status">✅ 已激活</span>
+                        </div>
+                        <div class="bonus-desc">攻击+10% 生命+20%</div>
+                    </div>
+                    <div class="bonus-item">
+                        <div class="bonus-header">
+                            <span class="bonus-name">12件效果</span>
+                            <span class="bonus-status">⭕ 未激活</span>
+                        </div>
+                        <div class="bonus-desc">PK增伤20% 对怪增伤30% 防御+30%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

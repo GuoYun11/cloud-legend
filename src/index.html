@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>云传奇</title>
+  <link rel="stylesheet" href="styles/design-tokens.css?v=20260408">
+  <link rel="stylesheet" href="styles/base.css?v=20260408">
+  <style>
+    /* Loading Screen */
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--color-bg-dark);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--color-text-gold);
+      font-size: var(--font-size-xxl);
+    }
+    #loading-screen .title { font-size: 36px; font-weight: bold; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+    #loading-screen .subtitle { font-size: var(--font-size-md); color: var(--color-text-secondary); margin-bottom: 30px; }
+    #loading-screen .loader {
+      width: 200px; height: 4px; background: var(--color-bg-panel); border-radius: 2px; overflow: hidden;
+    }
+    #loading-screen .loader-fill { width: 0; height: 100%; background: var(--color-text-gold); transition: width 0.3s; }
+
+    /* Create Screen */
+    #create-screen {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      position: absolute; inset: 0; z-index: 10;
+      background: var(--color-bg-dark); padding: var(--space-xl);
+    }
+    .create-title { font-size: var(--font-size-title); color: var(--color-text-gold); font-weight: bold; margin-bottom: 8px; text-shadow: 0 0 15px rgba(255,215,0,0.4); }
+    .create-subtitle { font-size: var(--font-size-md); color: var(--color-text-secondary); margin-bottom: 30px; }
+    .create-input {
+      width: 100%; max-width: 300px; padding: 12px 16px;
+      background: var(--color-bg-panel); border: 1px solid var(--color-border-gold);
+      border-radius: var(--radius-md); color: var(--color-text-primary);
+      font-size: var(--font-size-lg); text-align: center; margin-bottom: 24px;
+    }
+    .create-input::placeholder { color: var(--color-text-muted); }
+    .job-select { display: flex; gap: 12px; margin-bottom: 30px; width: 100%; max-width: 340px; }
+    .job-card {
+      flex: 1; padding: 16px 8px; background: var(--color-bg-panel);
+      border: 2px solid var(--color-border); border-radius: var(--radius-md);
+      text-align: center; cursor: pointer; transition: all var(--transition-fast);
+    }
+    .job-card:hover, .job-card.selected { border-color: var(--color-border-gold); box-shadow: var(--shadow-gold); }
+    .job-card .job-icon { font-size: 32px; margin-bottom: 6px; }
+    .job-card .job-name { font-size: var(--font-size-lg); font-weight: bold; color: var(--color-text-gold); }
+    .job-card .job-desc { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 4px; line-height: 1.3; }
+    .create-btn {
+      width: 100%; max-width: 300px; padding: 14px;
+      background: linear-gradient(135deg, #c8a44e, #a08030);
+      color: var(--color-bg-dark); font-size: var(--font-size-xl); font-weight: bold;
+      border: 1px solid var(--color-border-gold); border-radius: var(--radius-md);
+      cursor: pointer; text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    }
+    .create-btn:active { transform: scale(0.97); }
+    .create-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .create-error { color: var(--color-danger); font-size: var(--font-size-sm); margin-top: 10px; min-height: 20px; }
+
+    /* Game Screen */
+    #game-screen { display: none; flex-direction: column; height: 100%; }
+
+    /* Header */
+    .game-header {
+      background: linear-gradient(180deg, #2a1f15, #1a0f0a);
+      padding: 8px 12px; border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .header-name { font-size: var(--font-size-lg); font-weight: bold; color: var(--color-text-gold); }
+    .header-level { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .header-gold { font-size: var(--font-size-sm); color: var(--color-gold); }
+
+    /* Status Bars */
+    .status-bars { display: flex; flex-direction: column; gap: 3px; }
+    .bar-row { display: flex; align-items: center; gap: 6px; }
+    .bar-label { font-size: var(--font-size-xs); width: 24px; text-align: right; flex-shrink: 0; }
+    .bar-track {
+      flex: 1; height: 14px; background: var(--color-bg-dark);
+      border-radius: 7px; overflow: hidden; position: relative;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .bar-fill {
+      height: 100%; border-radius: 7px; transition: width 0.3s ease;
+      position: absolute; left: 0; top: 0;
+    }
+    .bar-fill.hp { background: linear-gradient(90deg, #991b1b, #dc2626, #ef4444); }
+    .bar-fill.mp { background: linear-gradient(90deg, #1e3a8a, #2563eb, #3b82f6); }
+    .bar-fill.exp { background: linear-gradient(90deg, #14532d, #16a34a, #22c55e); }
+    .bar-text {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); z-index: 1;
+    }
+
+    /* Combat Area */
+    .combat-area {
+      flex: 1; display: flex; flex-direction: column;
+      padding: 8px 12px; overflow: hidden; min-height: 0;
+    }
+    .combat-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .combat-map-name { font-size: var(--font-size-md); color: var(--color-text-gold); font-weight: bold; }
+    .combat-status { font-size: var(--font-size-xs); color: var(--color-success); }
+
+    /* Monster Section */
+    .monster-section {
+      background: var(--color-bg-panel); border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); padding: 10px;
+      margin-bottom: 8px; position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .monster-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .monster-name-text { font-size: var(--font-size-md); font-weight: bold; }
+    .monster-level { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+    .monster-hp-track {
+      width: 100%; height: 10px; background: var(--color-hp-bg);
+      border-radius: 5px; overflow: hidden; position: relative;
+    }
+    .monster-hp-fill {
+      height: 100%; background: linear-gradient(90deg, #991b1b, #dc2626);
+      border-radius: 5px; transition: width 0.2s ease;
+    }
+    .monster-hp-text {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+    }
+
+    /* Battle Log */
+    .battle-log {
+      flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+      background: rgba(0,0,0,0.3); border-radius: var(--radius-md);
+      padding: 6px 8px; margin-bottom: 8px;
+      font-size: var(--font-size-sm); line-height: 1.6;
+    }
+    .battle-log::-webkit-scrollbar { width: 3px; }
+    .battle-log::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+    .log-entry { padding: 1px 0; word-break: break-all; }
+    .log-player-attack { color: #e8d5b5; }
+    .log-monster-attack { color: #ef4444; }
+    .log-kill { color: var(--color-text-gold); font-weight: bold; }
+    .log-level_up { color: var(--color-text-gold); font-size: var(--font-size-md); font-weight: bold; text-shadow: 0 0 8px rgba(255,215,0,0.5); }
+    .log-drop { color: #a855f7; }
+    .log-miss, .log-dodge { color: #94a3b8; font-style: italic; }
+    .log-death { color: #ef4444; font-weight: bold; }
+    .log-revive { color: #4ade80; }
+    .log-boss { color: #f59e0b; font-weight: bold; }
+    .log-bonus { color: #fbbf24; }
+    .log-heal { color: #4ade80; }
+    .log-skill { color: #c084fc; font-weight: bold; }
+    .log-system { color: #94a3b8; font-style: italic; }
+    .log-buff { color: #fbbf24; }
+    .log-debuff { color: #f97316; }
+
+    /* Session Stats */
+    .session-stats {
+      display: flex; justify-content: space-around; padding: 6px 0;
+      border-top: 1px solid var(--color-border); flex-shrink: 0;
+    }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: var(--font-size-md); font-weight: bold; color: var(--color-text-gold); }
+    .stat-label { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+    /* Pages Container */
+    .pages-container { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex; background: linear-gradient(0deg, #1a0f0a, #2a1f15);
+      border-top: 1px solid var(--color-border); flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 8px 4px 6px; font-size: var(--font-size-xs);
+      color: var(--color-text-muted); cursor: pointer;
+      transition: color var(--transition-fast);
+    }
+    .nav-btn .nav-icon { font-size: 20px; margin-bottom: 2px; }
+    .nav-btn.active { color: var(--color-text-gold); }
+    .nav-btn:active { transform: scale(0.9); }
+
+    /* Offline Modal */
+    #offline-modal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: var(--color-bg-overlay); align-items: center; justify-content: center;
+    }
+    .offline-content {
+      background: var(--color-bg-panel); border: 2px solid var(--color-border-gold);
+      border-radius: var(--radius-lg); padding: 24px; width: 85%; max-width: 320px;
+      text-align: center; animation: slideUp 0.3s ease;
+    }
+    .offline-title { font-size: var(--font-size-xl); color: var(--color-text-gold); font-weight: bold; margin-bottom: 16px; }
+    .offline-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+    .offline-label { color: var(--color-text-secondary); }
+    .offline-value { color: var(--color-text-gold); font-weight: bold; }
+
+    /* Float Damage */
+    .float-damage {
+      position: absolute; pointer-events: none; font-weight: bold;
+      animation: floatUp 1s ease forwards; z-index: 50;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Loading -->
+    <div id="loading-screen">
+      <div class="title">云传奇</div>
+      <div class="subtitle">玛法大陆，等你归来</div>
+      <div class="loader"><div class="loader-fill" id="loader-fill"></div></div>
+    </div>
+
+    <!-- Create Character -->
+    <div id="create-screen">
+      <div class="create-title">云传奇</div>
+      <div class="create-subtitle">选择你的职业，开始冒险</div>
+      <input class="create-input" id="char-name-input" type="text" placeholder="输入角色名" maxlength="8">
+      <div class="job-select" id="job-select">
+        <div class="job-card" data-job="warrior">
+          <div class="job-icon">⚔️</div>
+          <div class="job-name">战士</div>
+          <div class="job-desc">高血量高防御<br>近战爆发</div>
+        </div>
+        <div class="job-card" data-job="mage">
+          <div class="job-icon">🔮</div>
+          <div class="job-name">法师</div>
+          <div class="job-desc">高魔法攻击<br>远程群攻</div>
+        </div>
+        <div class="job-card" data-job="taoist">
+          <div class="job-icon">☯️</div>
+          <div class="job-name">道士</div>
+          <div class="job-desc">均衡发展<br>施毒召唤</div>
+        </div>
+      </div>
+      <button class="create-btn" id="create-btn" disabled>开始冒险</button>
+      <div class="create-error" id="create-error"></div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen">
+      <!-- Header -->
+      <div class="game-header">
+        <div class="header-row">
+          <span class="header-name" id="player-name">--</span>
+          <span style="display:flex;align-items:center;gap:8px">
+            <span class="header-gold" id="player-gold">💰 0</span>
+            <span id="settings-btn" style="cursor:pointer;font-size:16px;opacity:0.7;padding:2px 4px" title="设置">⚙️</span>
+          </span>
+        </div>
+        <div class="header-row">
+          <span class="header-level" id="player-level">Lv.1 战士</span>
+        </div>
+        <div class="status-bars">
+          <div class="bar-row">
+            <span class="bar-label" style="color:var(--color-hp)">HP</span>
+            <div class="bar-track" id="hp-bar">
+              <div class="bar-fill hp" id="hp-fill" style="width:100%"></div>
+              <div class="bar-text" id="hp-text">100/100</div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label" style="color:var(--color-mp)">MP</span>
+            <div class="bar-track" id="mp-bar">
+              <div class="bar-fill mp" id="mp-fill" style="width:100%"></div>
+              <div class="bar-text" id="mp-text">50/50</div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label" style="color:var(--color-exp)">EXP</span>
+            <div class="bar-track" id="exp-bar">
+              <div class="bar-fill exp" id="exp-fill" style="width:0%"></div>
+              <div class="bar-text" id="exp-text">0/100</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pages Container -->
+      <div class="pages-container">
+        <!-- Main Page (Combat) -->
+        <div class="page active" id="page-main">
+          <div class="combat-area">
+            <div class="combat-header">
+              <span class="combat-map-name" id="combat-map-name">比奇郊外</span>
+              <span class="combat-status" id="combat-status">⚔️ 挂机中</span>
+            </div>
+            <div class="monster-section" id="monster-section">
+              <div class="monster-info">
+                <span class="monster-name-text" id="monster-name">稻草人</span>
+                <span class="monster-level" id="monster-level">Lv.1</span>
+              </div>
+              <div class="monster-hp-track" id="monster-hp-bar">
+                <div class="monster-hp-fill" id="monster-hp-fill" style="width:100%"></div>
+                <div class="monster-hp-text" id="monster-hp-text">50/50</div>
+              </div>
+            </div>
+            <div id="weak-status" style="display:none;background:#2a1f15;border:1px solid #f59e0b;border-radius:6px;padding:4px 8px;margin-bottom:6px;font-size:11px;text-align:center;color:#f59e0b"></div>
+            <div id="potion-bar" style="display:flex;gap:6px;margin-bottom:6px;flex-shrink:0"></div>
+            <div class="battle-log" id="battle-log-list"></div>
+            <div class="session-stats">
+              <div class="stat-item"><div class="stat-value" id="session-kills">0</div><div class="stat-label">击杀</div></div>
+              <div class="stat-item"><div class="stat-value" id="session-exp">0</div><div class="stat-label">经验</div></div>
+              <div class="stat-item"><div class="stat-value" id="session-gold">0</div><div class="stat-label">金币</div></div>
+              <div class="stat-item"><div class="stat-value" id="session-drops">0</div><div class="stat-label">掉落</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Equipment Page -->
+        <div class="page" id="page-equip"></div>
+
+        <!-- Bag Page -->
+        <div class="page" id="page-bag"></div>
+
+        <!-- Skill Page -->
+        <div class="page" id="page-skill"></div>
+
+        <!-- Map Page -->
+        <div class="page" id="page-map"></div>
+
+        <!-- Zodiac Page -->
+        <div class="page" id="page-zodiac"></div>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-btn active" data-page="main"><span class="nav-icon">⚔️</span>战斗</div>
+        <div class="nav-btn" data-page="equip"><span class="nav-icon">🛡️</span>装备</div>
+        <div class="nav-btn" data-page="bag"><span class="nav-icon">🎒</span>背包</div>
+        <div class="nav-btn" data-page="skill"><span class="nav-icon">📜</span>技能</div>
+        <div class="nav-btn" data-page="map"><span class="nav-icon">🗺️</span>地图</div>
+        <div class="nav-btn" data-page="zodiac"><span class="nav-icon">🐲</span>生肖</div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.85);align-items:center;justify-content:center">
+      <div style="background:#1a1208;border:2px solid #c8a84e;border-radius:12px;padding:24px 20px;width:85%;max-width:320px;text-align:center">
+        <div style="font-size:20px;font-weight:bold;color:#ffd700;margin-bottom:16px;text-shadow:0 0 10px rgba(255,215,0,0.3)">⚙️ 设置</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          <button class="btn btn-secondary" id="settings-export-btn" style="font-size:13px;min-height:38px">📤 导出存档</button>
+          <button class="btn btn-secondary" id="settings-import-btn" style="font-size:13px;min-height:38px">📥 导入存档</button>
+          <div style="border-top:1px solid #3a2a15;margin:6px 0"></div>
+          <button id="settings-recreate-btn" style="font-size:13px;min-height:38px;background:#5c1a1a;color:#ef4444;border:1px solid #7f1d1d;border-radius:8px;cursor:pointer;font-weight:bold">🔄 重新创建角色</button>
+        </div>
+        <button class="btn btn-primary" id="settings-close-btn" style="font-size:14px;min-height:38px;width:100%">关闭</button>
+      </div>
+    </div>
+
+    <!-- Recreate Confirm Modal -->
+    <div id="recreate-confirm-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.9);align-items:center;justify-content:center">
+      <div style="background:#1a0a05;border:2px solid #dc2626;border-radius:12px;padding:24px 20px;width:85%;max-width:320px;text-align:center">
+        <div style="font-size:28px;margin-bottom:8px">⚠️</div>
+        <div style="color:#ef4444;font-size:16px;font-weight:bold;margin-bottom:8px">确认重新创建角色？</div>
+        <div style="color:#c8b896;font-size:13px;margin-bottom:6px;line-height:1.6">此操作将<span style="color:#ef4444;font-weight:bold">永久删除</span>当前所有游戏数据：</div>
+        <div style="color:#7a6548;font-size:12px;margin-bottom:16px;line-height:1.5;text-align:left;padding:0 12px">
+          • 角色等级与属性<br>• 所有装备与背包物品<br>• 金币与材料<br>• 技能等级<br>• 生肖收集进度<br>• 地图解锁进度
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-secondary" id="recreate-cancel-btn" style="flex:1;font-size:14px;min-height:40px">取消</button>
+          <button id="recreate-confirm-btn" style="flex:1;font-size:14px;min-height:40px;background:#7f1d1d;color:#fff;border:1px solid #dc2626;border-radius:8px;cursor:pointer;font-weight:bold">确认删除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Save Modal -->
+    <div id="import-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.9);align-items:center;justify-content:center">
+      <div style="background:#1a1208;border:2px solid #c8a84e;border-radius:12px;padding:24px 20px;width:85%;max-width:320px;text-align:center">
+        <div style="color:#ffd700;font-size:16px;font-weight:bold;margin-bottom:12px">📥 导入存档</div>
+        <textarea id="import-textarea" placeholder="粘贴存档码..." style="width:100%;height:80px;background:#0d0a06;border:1px solid #3a2a15;border-radius:8px;color:#c8b896;font-size:12px;padding:8px;resize:none;box-sizing:border-box;margin-bottom:12px"></textarea>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-secondary" id="import-cancel-btn" style="flex:1;font-size:14px;min-height:38px">取消</button>
+          <button class="btn btn-primary" id="import-do-btn" style="flex:1;font-size:14px;min-height:38px">确认导入</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Death Modal -->
+    <div id="death-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);align-items:center;justify-content:center">
+      <div style="background:#1a0a05;border:2px solid #dc2626;border-radius:12px;padding:20px;width:85%;max-width:320px;text-align:center">
+        <div style="font-size:36px;margin-bottom:8px">☠️</div>
+        <div style="color:#ef4444;font-size:18px;font-weight:bold;margin-bottom:4px">你已阵亡</div>
+        <div style="color:#7a6548;font-size:12px;margin-bottom:16px" id="death-countdown-text">5秒后可自动复活</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+          <button class="btn btn-primary" id="death-revive-btn" style="font-size:14px;min-height:40px">⚡ 立即复活 (50%HP)</button>
+          <button class="btn btn-secondary" id="death-town-btn" style="font-size:14px;min-height:40px">🏠 回城 (盟重土城·满血)</button>
+        </div>
+        <label style="display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:#c8b896;font-size:12px">
+          <input type="checkbox" id="death-auto-check" style="width:16px;height:16px;accent-color:#dc2626"> 自动复活
+        </label>
+      </div>
+    </div>
+
+    <!-- Offline Reward Modal -->
+    <div id="offline-modal">
+      <div class="offline-content">
+        <div class="offline-title">📜 离线收益</div>
+        <div class="offline-row"><span class="offline-label">离线时长</span><span class="offline-value offline-time">--</span></div>
+        <div class="offline-row"><span class="offline-label">经验奖励</span><span class="offline-value offline-exp">--</span></div>
+        <div class="offline-row"><span class="offline-label">金币奖励</span><span class="offline-value offline-gold">--</span></div>
+        <div class="offline-row"><span class="offline-label">装备掉落</span><span class="offline-value offline-items">--</span></div>
+        <button class="btn btn-primary btn-block" id="offline-collect-btn" style="margin-top:16px">领取奖励</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="scripts/main.js?v=20260410a"></script>
+</body>
+</html>
